@@ -1,18 +1,27 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.30;
+
+struct ProjectProposal {
+    string title;
+    string description;
+    string ipfsHash;
+    address payable scientist;
+    uint amountRequested;
+    uint votes;
+    bool funded;
+    mapping(address => bool) voters;
+}
+
+struct ProjectProposalDTO {
+    string title;
+    string description;
+    string ipfsHash;
+    uint amountRequested;
+    uint votes;
+    bool funded;
+}
 
 contract ScientiveDAO {
-    struct ProjectProposal {
-        string title;
-        string description;
-        string ipfsHash;
-        address payable scientist;
-        uint amountRequested;
-        uint votes;
-        bool funded;
-        mapping(address => bool) voters;
-    }
-
     address public founder;
     uint public quorum;
     uint public proposalCount;
@@ -56,14 +65,22 @@ contract ScientiveDAO {
     function getProposals(
         uint256 _startId,
         uint256 _qtd
-    ) external view returns (ProjectProposal[] memory) {
-        ProjectProposal[] memory _projectProposal = new ProjectProposal[](_qtd);
+    ) external view returns (ProjectProposalDTO[] memory) {
+        ProjectProposalDTO[] memory _projectProposal = new ProjectProposalDTO[](
+            _qtd
+        );
         uint256 _id = _startId;
         uint256 count = 0;
 
         do {
             if (proposals[_id].funded == false) {
-                _projectProposal[count] = proposals[_id];
+                _projectProposal[count].title = proposals[_id].title;
+                _projectProposal[count].description = proposals[_id]
+                    .description;
+                _projectProposal[count].ipfsHash = proposals[_id].ipfsHash;
+                _projectProposal[count].amountRequested = proposals[_id]
+                    .amountRequested;
+                _projectProposal[count].votes = proposals[_id].votes;
                 count++;
             }
 
